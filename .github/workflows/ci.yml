@@ -45,24 +45,21 @@ jobs:
     - name: Verify data exists
       run: |
         if [ ! -f data/raw/creditcard.csv ]; then
-          echo "Warning: creditcard.csv not found. Pipeline may fail."
-          echo "Please ensure data is available or DVC remote is configured."
+          echo "Data not found. Attempting to generate dummy data for CI..."
+          python src/make_dummy_data.py
         else
           echo "Data file found: data/raw/creditcard.csv"
-          ls -lh data/raw/creditcard.csv
         fi
-    
+      
     - name: Run data pipeline tests
       run: |
-        pytest tests/test_data_pipeline.py -v --tb=short || echo "Data pipeline tests skipped (data not available)"
-      continue-on-error: true
+        pytest tests/test_data_pipeline.py -v --tb=short
     
     - name: Run DVC pipeline (with epoch override)
       env:
         N_EPOCHS_OVERRIDE: 2
       run: |
         dvc repro
-      continue-on-error: true
     
     - name: Run training tests
       run: |

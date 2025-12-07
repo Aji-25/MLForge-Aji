@@ -24,7 +24,13 @@ if [ -f "data/raw/creditcard.csv" ]; then
     ls -lh data/raw/creditcard.csv
 else
     echo "✗ Warning: data/raw/creditcard.csv not found"
-    echo "  Please place the creditcard.csv file in data/raw/"
+    echo "  Would you like to generate dummy data for testing? (y/n)"
+    read -r response
+    if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+        python src/make_dummy_data.py
+    else
+        echo "  Please place the creditcard.csv file in data/raw/"
+    fi
 fi
 
 # Initialize DVC (optional)
