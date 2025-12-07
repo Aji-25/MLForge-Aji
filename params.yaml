@@ -1,0 +1,42 @@
+# MLForge Credit Fraud Detection - Configuration Parameters
+
+# Data paths
+data:
+  raw: data/raw/creditcard.csv
+  interim: data/interim/clean.csv
+  processed:
+    X_train: data/processed/X_train.npy
+    X_test: data/processed/X_test.npy
+    y_train: data/processed/y_train.npy
+    y_test: data/processed/y_test.npy
+
+# Data preprocessing
+preprocessing:
+  test_size: 0.2
+  random_state: 42
+  stratify: true
+
+# Model architecture
+model:
+  input_features: 30
+  hidden_units: 256
+  output_features: 1
+
+# Training configuration
+training:
+  epochs: 100
+  learning_rate: 0.005
+  random_seed: 42
+  
+# Model output
+model_path: models/model.pt
+
+# Evaluation outputs
+evaluation:
+  metrics_path: reports/metrics.json
+  confusion_matrix_path: reports/figures/confusion_matrix.png
+
+# MLflow configuration
+mlflow:
+  experiment_name: credit-fraud-detection
+  tracking_uri: ./mlruns

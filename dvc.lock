@@ -1,0 +1,152 @@
+schema: '2.0'
+stages:
+  load:
+    cmd: python src/data_load.py
+    deps:
+    - path: data/raw/creditcard.csv
+      hash: md5
+      md5: e90efcb83d69faf99fcab8b0255024de
+      size: 150828752
+    - path: src/data_load.py
+      hash: md5
+      md5: c1b32711759cb443762a0ceff7720c00
+      size: 2525
+    params:
+      params.yaml:
+        data.interim: data/interim/clean.csv
+        data.raw: data/raw/creditcard.csv
+    outs:
+    - path: data/interim/clean.csv
+      hash: md5
+      md5: dc31d6eb183be31c3ada5ab12115bdd2
+      size: 150817597
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+    - path: data/interim/clean.csv
+      hash: md5
+      md5: dc31d6eb183be31c3ada5ab12115bdd2
+      size: 150817597
+    - path: src/preprocess.py
+      hash: md5
+      md5: e5450a54bab2e751af013e4941c0feea
+      size: 4225
+    params:
+      params.yaml:
+        data.interim: data/interim/clean.csv
+        data.processed:
+          X_train: data/processed/X_train.npy
+          X_test: data/processed/X_test.npy
+          y_train: data/processed/y_train.npy
+          y_test: data/processed/y_test.npy
+        preprocessing:
+          test_size: 0.2
+          random_state: 42
+          stratify: true
+    outs:
+    - path: data/processed/X_test.npy
+      hash: md5
+      md5: 6c0d1acb9dd51fbe88d3bbfbfb7902b4
+      size: 13671008
+    - path: data/processed/X_train.npy
+      hash: md5
+      md5: 5b492fddff3830307f9d2d606c9a23cb
+      size: 54682928
+    - path: data/processed/y_test.npy
+      hash: md5
+      md5: ab56c10f9f3a8073a551d77048bb5d8d
+      size: 455824
+    - path: data/processed/y_train.npy
+      hash: md5
+      md5: 56fbc9f5c5d246dd4c6617c1bcc9ea34
+      size: 1822888
+  train:
+    cmd: python src/train.py
+    deps:
+    - path: data/processed/X_test.npy
+      hash: md5
+      md5: 6c0d1acb9dd51fbe88d3bbfbfb7902b4
+      size: 13671008
+    - path: data/processed/X_train.npy
+      hash: md5
+      md5: 5b492fddff3830307f9d2d606c9a23cb
+      size: 54682928
+    - path: data/processed/y_test.npy
+      hash: md5
+      md5: ab56c10f9f3a8073a551d77048bb5d8d
+      size: 455824
+    - path: data/processed/y_train.npy
+      hash: md5
+      md5: 56fbc9f5c5d246dd4c6617c1bcc9ea34
+      size: 1822888
+    - path: src/model.py
+      hash: md5
+      md5: 8dcc062993dd28d2b5e823bd14795a47
+      size: 2195
+    - path: src/train.py
+      hash: md5
+      md5: 166165bc80196d5ce2d8d2dab9af8dd3
+      size: 7809
+    params:
+      params.yaml:
+        mlflow:
+          experiment_name: credit-fraud-detection
+          tracking_uri: ./mlruns
+        model:
+          input_features: 30
+          hidden_units: 256
+          output_features: 1
+        model_path: models/model.pt
+        training:
+          epochs: 100
+          learning_rate: 0.005
+          random_seed: 42
+    outs:
+    - path: models/model.pt
+      hash: md5
+      md5: 9c207a561ec4db71d2d900c72eea0a25
+      size: 562481
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+    - path: data/processed/X_test.npy
+      hash: md5
+      md5: 6c0d1acb9dd51fbe88d3bbfbfb7902b4
+      size: 13671008
+    - path: data/processed/y_test.npy
+      hash: md5
+      md5: ab56c10f9f3a8073a551d77048bb5d8d
+      size: 455824
+    - path: models/model.pt
+      hash: md5
+      md5: 9c207a561ec4db71d2d900c72eea0a25
+      size: 562481
+    - path: src/evaluate.py
+      hash: md5
+      md5: f9126554e834c12f0e96a994e2831d9e
+      size: 6390
+    - path: src/model.py
+      hash: md5
+      md5: 8dcc062993dd28d2b5e823bd14795a47
+      size: 2195
+    params:
+      params.yaml:
+        evaluation:
+          metrics_path: reports/metrics.json
+          confusion_matrix_path: reports/figures/confusion_matrix.png
+        mlflow:
+          experiment_name: credit-fraud-detection
+          tracking_uri: ./mlruns
+        model:
+          input_features: 30
+          hidden_units: 256
+          output_features: 1
+    outs:
+    - path: reports/figures/confusion_matrix.png
+      hash: md5
+      md5: 00d0cd11268db7ce6a9489fdd977f4d3
+      size: 41234
+    - path: reports/metrics.json
+      hash: md5
+      md5: 1a052829f4968bcdb888f73981d25e6b
+      size: 138

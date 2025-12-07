@@ -1,0 +1,62 @@
+stages:
+  load:
+    cmd: python src/load_data.py
+    deps:
+      - src/load_data.py
+      - ${data.raw}
+    params:
+      - data.raw
+      - data.interim
+    outs:
+      - ${data.interim}
+
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+      - src/preprocess.py
+      - ${data.interim}
+    params:
+      - data.interim
+      - data.processed
+      - preprocessing
+    outs:
+      - ${data.processed.X_train}
+      - ${data.processed.X_test}
+      - ${data.processed.y_train}
+      - ${data.processed.y_test}
+
+  train:
+    cmd: python src/train.py
+    deps:
+      - src/train.py
+      - src/model.py
+      - ${data.processed.X_train}
+      - ${data.processed.X_test}
+      - ${data.processed.y_train}
+      - ${data.processed.y_test}
+    params:
+      - model
+      - training
+      - model_path
+      - mlflow
+    outs:
+      - ${model_path}
+
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+      - src/evaluate.py
+      - src/model.py
+      - ${model_path}
+      - ${data.processed.X_test}
+      - ${data.processed.y_test}
+    params:
+      - model
+      - evaluation
+      - mlflow
+    metrics:
+      - ${evaluation.metrics_path}:
+          cache: false
+    plots:
+      - ${evaluation.confusion_matrix_path}:
+          cache: false

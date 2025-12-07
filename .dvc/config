@@ -1,0 +1,6 @@
+[core]
+    no_scm = True
+    remote = storage
+
+['remote "storage"']
+    url = gdrive://FOLDER_ID_PLACEHOLDER
