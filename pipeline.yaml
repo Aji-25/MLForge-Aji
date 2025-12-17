@@ -1,0 +1,36 @@
+stages:
+  load:
+    cmd: python3 -m src.load_data
+    deps:
+      - data/raw/creditcard.csv
+      - src/load_data.py
+    outs:
+      - data/interim/clean.csv
+
+  preprocess:
+    cmd: python3 -m src.preprocess
+    deps:
+      - data/interim/clean.csv
+      - src/preprocess.py
+    outs:
+      - data/processed/X_train.npy
+      - data/processed/X_test.npy
+      - data/processed/y_train.npy
+      - data/processed/y_test.npy
+
+  train:
+    cmd: python3 -m src.train
+    deps:
+      - data/processed/X_train.npy
+      - data/processed/y_train.npy
+      - src/train.py
+    outs:
+      - models/model.pt
+
+  evaluate:
+    cmd: python3 -m src.evaluate
+    deps:
+      - models/model.pt
+      - src/evaluate.py
+    outs:
+      - reports/metrics.json

@@ -13,7 +13,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from model import get_model
+from src.model import get_model
 
 
 def load_params():

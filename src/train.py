@@ -13,7 +13,7 @@ import mlflow.pytorch
 import os
 import sys
 
-from model import get_model
+from src.model import get_model
 
 
 def load_params():
